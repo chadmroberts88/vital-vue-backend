@@ -1,9 +1,13 @@
-import express, { Request, Response } from "express";
-import { PatientController } from "./controllers/patient-controller";
+import express, { Application, Request, Response } from "express";
+import { PatientController } from "./controllers/patient.controller";
+import { UserController } from "./controllers/user.controller";
+import { VitalsController } from "./controllers/vitals.controller";
 
 export class Server {
-  private app: express.Application;
+  private app: Application;
+  private userController: UserController;
   private patientController: PatientController;
+  private vitalsController: VitalsController;
 
   /**
    * Constructor to initialize and configure the application.
@@ -11,7 +15,9 @@ export class Server {
   constructor() {
     this.app = express();
     this.configuration();
+    this.userController = new UserController();
     this.patientController = new PatientController();
+    this.vitalsController = new VitalsController();
     this.routes();
   }
 
@@ -25,8 +31,10 @@ export class Server {
   /**
    * Configures the routes.
    */
-  public async routes() {
-    this.app.use("/api/patient/", this.patientController.router);
+  public routes() {
+    this.app.use("/users/", this.userController.router);
+    this.app.use("/patients/", this.patientController.router);
+    this.app.use("/vitals/", this.vitalsController.router);
     this.app.get("/", (req: Request, res: Response) => {
       res.send("Hello world!");
     });
